@@ -219,6 +219,54 @@ export const useGame = () => {
     startFalling();
   };
 
+  const hardDrop = () => {
+    console.log('Hard dropping tetromino');
+    setGameState(prev => {
+      if (!prev.currentTetromino) {
+        console.log('No current tetromino to hard drop');
+        return prev;
+      }
+
+      let dropDistance = 0;
+      let testTetromino = { ...prev.currentTetromino };
+
+      // 最下部まで移動できる距離を計算
+      while (true) {
+        const nextPosition = {
+          ...testTetromino.position,
+          y: testTetromino.position.y + 1,
+        };
+
+        const nextTetromino = {
+          ...testTetromino,
+          position: nextPosition,
+        };
+
+        if (!isValidPosition(nextTetromino, prev.grid)) {
+          break;
+        }
+
+        testTetromino = nextTetromino;
+        dropDistance++;
+      }
+
+      // 実際の移動
+      if (dropDistance > 0) {
+        console.log('Hard dropped tetromino by', dropDistance, 'cells');
+        return {
+          ...prev,
+          currentTetromino: testTetromino,
+        };
+      }
+
+      return prev;
+    });
+
+    // 即座に固定して新しいテトリミノを生成
+    fixTetromino();
+    spawnNewTetromino();
+  };
+
   // クリーンアップ
   onCleanup(() => {
     console.log('Cleaning up game resources');
@@ -231,5 +279,6 @@ export const useGame = () => {
     moveTetromino,
     rotateTetromino,
     spawnNewTetromino,
+    hardDrop,
   };
 }; 
