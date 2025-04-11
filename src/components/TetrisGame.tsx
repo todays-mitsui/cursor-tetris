@@ -9,8 +9,12 @@ const TetrisGame: Component = () => {
   const { gameState, startGame, moveTetromino, rotateTetromino, spawnNewTetromino } = useGame();
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (gameState().gameOver) return;
+    if (gameState().gameOver) {
+      console.log('Ignoring key press - game over');
+      return;
+    }
 
+    console.log('Key pressed:', e.key, e.shiftKey ? 'with shift' : '');
     switch (e.key) {
       case 'ArrowLeft':
         moveTetromino(-1, 0);
@@ -32,6 +36,7 @@ const TetrisGame: Component = () => {
   };
 
   onMount(() => {
+    console.log('TetrisGame component mounted');
     window.addEventListener('keydown', handleKeyDown);
     startGame();
   });
@@ -51,13 +56,19 @@ const TetrisGame: Component = () => {
       {gameState().gameOver && (
         <div class={styles.gameOver}>
           <h2>Game Over</h2>
-          <button onClick={startGame}>Play Again</button>
+          <button onClick={() => {
+            console.log('Restarting game');
+            startGame();
+          }}>Play Again</button>
         </div>
       )}
       <div class={styles.debugControls}>
         {TETROMINO_TYPES.map(type => (
           <button
-            onClick={() => spawnNewTetromino(type)}
+            onClick={() => {
+              console.log('Debug: Spawning tetromino:', type);
+              spawnNewTetromino(type);
+            }}
             class={styles.debugButton}
           >
             {type}
