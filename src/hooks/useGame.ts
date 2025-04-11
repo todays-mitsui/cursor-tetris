@@ -3,7 +3,7 @@ import { GameState, Tetromino, TetrominoType } from '../types/game';
 import { createTetromino, TETROMINO_SHAPES } from '../utils/tetrominoes';
 
 const GRID_WIDTH = 10;
-const GRID_HEIGHT = 30;
+const GRID_HEIGHT = 20;
 
 const createEmptyGrid = (): GameState['grid'] => 
   Array(GRID_HEIGHT).fill(null).map(() => 

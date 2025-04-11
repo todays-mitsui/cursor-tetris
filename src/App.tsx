@@ -5,9 +5,6 @@ import './App.css'
 const App: Component = () => {
   return (
     <div class="App">
-      <header>
-        <h1>テトリス</h1>
-      </header>
       <main>
         <TetrisGame />
       </main>
