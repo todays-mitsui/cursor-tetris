@@ -1,28 +1,38 @@
-## Usage
+# ブラウザで遊べるテトリス
+
+SolidJS + TypeScript + Viteで作られたブラウザで遊べるテトリスゲームです。
+
+## 機能
+
+- 横10マス×縦30マスのグリッド
+- キーボード操作によるテトリミノの移動と回転
+- スコアシステム（複数行同時消しで高得点）
+- 次のテトリミノのプレビュー表示
+- ゲームオーバー時のスコア表示
+
+## 操作方法
+
+- ← : テトリミノを左に移動
+- → : テトリミノを右に移動
+- ↑ : テトリミノを右回転
+- Shift + ↑ : テトリミノを左回転
+- ↓ : テトリミノを即時落下
+
+## 開発環境のセットアップ
 
 ```bash
-$ npm install # or pnpm install or yarn install
+# 依存パッケージのインストール
+npm install
+
+# 開発サーバーの起動
+npm run dev
+
+# ビルド
+npm run build
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+## 使用技術
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm run dev`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-Learn more about deploying your application with the [documentations](https://vite.dev/guide/static-deploy.html)
+- SolidJS
+- TypeScript
+- Vite
