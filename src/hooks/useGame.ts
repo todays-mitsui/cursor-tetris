@@ -92,14 +92,24 @@ export const useGame = () => {
         }
       }
 
+      // スコア計算
+      let newScore = prev.score;
       if (clearedLines > 0) {
         console.log(`Cleared ${clearedLines} line(s)`);
+        // 同時に消した行数に応じてスコアを加算
+        // 1行: 100点
+        // 2行: 300点
+        // 3行: 500点
+        // 4行: 800点
+        const scoreTable = [0, 100, 300, 500, 800];
+        newScore += scoreTable[clearedLines];
       }
 
       return {
         ...prev,
         grid: newGrid,
         currentTetromino: null,
+        score: newScore,
       };
     });
   };
