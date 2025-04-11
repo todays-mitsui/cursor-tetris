@@ -73,7 +73,26 @@ const TetrisGame: Component = () => {
         <div class={styles.score}>Score: {gameState().score}</div>
         <div class={styles.nextPiece}>
           <h3>Next Piece</h3>
-          {/* 次のテトリミノのプレビューをここに実装 */}
+          <div class={styles.nextPiecePreview}>
+            {gameState().nextTetromino && (
+              <div 
+                class={styles.nextPieceGrid}
+                style={{
+                  "--next-piece-grid-columns": `${gameState().nextTetromino!.shape[0].length}`,
+                  "--next-piece-grid-rows": `${gameState().nextTetromino!.shape.length}`
+                } as any}
+              >
+                {gameState().nextTetromino.shape.map((row, y) => (
+                  row.map((cell, x) => (
+                    <div
+                      class={`${styles.cell} ${cell ? styles.filled : ''}`}
+                      style={{ "background-color": cell ? gameState().nextTetromino!.color : '#222' }}
+                    />
+                  ))
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div class={styles.gameBoard}>
