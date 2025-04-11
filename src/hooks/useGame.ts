@@ -78,6 +78,24 @@ export const useGame = () => {
         }
       }
 
+      // 行の消去処理
+      let clearedLines = 0;
+      for (let y = GRID_HEIGHT - 1; y >= 0; y--) {
+        const isLineFull = newGrid[y].every(cell => cell.filled);
+        if (isLineFull) {
+          // 行を消去
+          newGrid.splice(y, 1);
+          // 上部に空の行を追加
+          newGrid.unshift(Array(GRID_WIDTH).fill(null).map(() => ({ filled: false })));
+          clearedLines++;
+          y++; // 同じ行を再度チェックするため
+        }
+      }
+
+      if (clearedLines > 0) {
+        console.log(`Cleared ${clearedLines} line(s)`);
+      }
+
       return {
         ...prev,
         grid: newGrid,
