@@ -1,6 +1,6 @@
 import { Component, onMount } from 'solid-js';
 import { useGame } from '../hooks/useGame';
-import { TetrominoType } from '../types/game';
+import { TetrominoType, Cell } from '../types/game';
 import styles from './TetrisGame.module.css';
 
 const TETROMINO_TYPES: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
@@ -41,6 +41,29 @@ const TetrisGame: Component = () => {
     startGame();
   });
 
+  const getCellColor = (cell: Cell, row: number, col: number): string => {
+    const state = gameState();
+    // 現在のテトリミノの位置にあるセルの色を返す
+    if (state.currentTetromino) {
+      const tetromino = state.currentTetromino;
+      const relativeRow = row - tetromino.position.y;
+      const relativeCol = col - tetromino.position.x;
+
+      if (
+        relativeRow >= 0 &&
+        relativeRow < tetromino.shape.length &&
+        relativeCol >= 0 &&
+        relativeCol < tetromino.shape[0].length &&
+        tetromino.shape[relativeRow][relativeCol]
+      ) {
+        return tetromino.color;
+      }
+    }
+
+    // 固定されたブロックの色を返す
+    return cell.color || '#222';
+  };
+
   return (
     <div class={styles.gameContainer}>
       <div class={styles.gameInfo}>
@@ -51,7 +74,14 @@ const TetrisGame: Component = () => {
         </div>
       </div>
       <div class={styles.gameBoard}>
-        {/* ゲームボードのグリッドをここに実装 */}
+        {gameState().grid.map((row, rowIndex) => (
+          row.map((cell, colIndex) => (
+            <div
+              class={`${styles.cell} ${cell.filled ? styles.filled : ''}`}
+              style={{ "background-color": getCellColor(cell, rowIndex, colIndex) }}
+            />
+          ))
+        ))}
       </div>
       {gameState().gameOver && (
         <div class={styles.gameOver}>

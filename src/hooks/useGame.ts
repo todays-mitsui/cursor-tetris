@@ -56,6 +56,36 @@ export const useGame = () => {
 
   let fallInterval: number | undefined;
 
+  const fixTetromino = () => {
+    console.log('Fixing tetromino to grid');
+    setGameState(prev => {
+      if (!prev.currentTetromino) return prev;
+
+      const newGrid = [...prev.grid.map(row => [...row])];
+      const tetromino = prev.currentTetromino;
+
+      // テトリミノの各セルをグリッドに固定
+      for (let y = 0; y < tetromino.shape.length; y++) {
+        for (let x = 0; x < tetromino.shape[y].length; x++) {
+          if (tetromino.shape[y][x]) {
+            const gridY = tetromino.position.y + y;
+            const gridX = tetromino.position.x + x;
+            newGrid[gridY][gridX] = {
+              filled: true,
+              color: tetromino.color,
+            };
+          }
+        }
+      }
+
+      return {
+        ...prev,
+        grid: newGrid,
+        currentTetromino: null,
+      };
+    });
+  };
+
   const spawnNewTetromino = (type?: TetrominoType) => {
     const newType = type || getRandomTetrominoType();
     const newTetromino = createTetromino(newType);
@@ -163,6 +193,7 @@ export const useGame = () => {
       } else {
         console.log('Tetromino reached bottom or obstacle');
         // 移動できない場合は固定して新しいテトリミノを生成
+        fixTetromino();
         spawnNewTetromino();
       }
     }, FALL_INTERVAL);
