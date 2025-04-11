@@ -69,6 +69,17 @@ const TetrisGame: Component = () => {
 
   return (
     <div class={styles.gameContainer}>
+      <div class={styles.gameBoard}>
+        {gameState().grid.map((row, rowIndex) => (
+          row.map((cell, colIndex) => (
+            <div
+              class={`${styles.cell} ${cell.filled ? styles.filled : ''}`}
+              style={{ "background-color": getCellColor(cell, rowIndex, colIndex) }}
+            />
+          ))
+        ))}
+      </div>
+
       <div class={styles.gameInfo}>
         <div class={styles.score}>Score: {gameState().score}</div>
         <div class={styles.nextPiece}>
@@ -95,16 +106,7 @@ const TetrisGame: Component = () => {
           </div>
         </div>
       </div>
-      <div class={styles.gameBoard}>
-        {gameState().grid.map((row, rowIndex) => (
-          row.map((cell, colIndex) => (
-            <div
-              class={`${styles.cell} ${cell.filled ? styles.filled : ''}`}
-              style={{ "background-color": getCellColor(cell, rowIndex, colIndex) }}
-            />
-          ))
-        ))}
-      </div>
+
       {gameState().gameOver && (
         <div class={styles.gameOver}>
           <h2>Game Over</h2>
@@ -114,6 +116,7 @@ const TetrisGame: Component = () => {
           }}>Play Again</button>
         </div>
       )}
+
       <div class={styles.debugControls}>
         {TETROMINO_TYPES.map(type => (
           <button
