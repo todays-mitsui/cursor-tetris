@@ -1,4 +1,4 @@
-import { Component, onMount } from 'solid-js';
+import { Component, onMount, Show, createEffect } from 'solid-js';
 import { useGame } from '../hooks/useGame';
 import { TetrominoType, Cell } from '../types/game';
 import styles from './TetrisGame.module.css';
@@ -7,6 +7,7 @@ const TETROMINO_TYPES: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 
 const TetrisGame: Component = () => {
   const { gameState, startGame, moveTetromino, rotateTetromino, spawnNewTetromino, hardDrop } = useGame();
+  let playAgainButton: HTMLButtonElement | undefined;
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (gameState().gameOver) {
@@ -42,6 +43,12 @@ const TetrisGame: Component = () => {
     console.log('TetrisGame component mounted');
     window.addEventListener('keydown', handleKeyDown);
     startGame();
+  });
+
+  createEffect(() => {
+    if (gameState().gameOver && playAgainButton) {
+      playAgainButton.focus();
+    }
   });
 
   const getCellColor = (cell: Cell, row: number, col: number): string => {
@@ -88,37 +95,44 @@ const TetrisGame: Component = () => {
         <div class={styles.nextPiece}>
           <h3>Next Piece</h3>
           <div class={styles.nextPiecePreview}>
-            {gameState().nextTetromino && (
-              <div 
-                class={styles.nextPieceGrid}
-                style={{
-                  "--next-piece-grid-columns": `${gameState().nextTetromino!.shape[0].length}`,
-                  "--next-piece-grid-rows": `${gameState().nextTetromino!.shape.length}`
-                } as any}
-              >
-                {gameState().nextTetromino.shape.map((row, y) => (
-                  row.map((cell, x) => (
-                    <div
-                      class={`${styles.cell} ${cell ? styles.filled : ''}`}
-                      style={{ "background-color": cell ? gameState().nextTetromino!.color : '#222' }}
-                    />
-                  ))
-                ))}
-              </div>
-            )}
+            <Show when={gameState().nextTetromino}>
+              {(nextTetromino) => (
+                <div 
+                  class={styles.nextPieceGrid}
+                  style={{
+                    "--next-piece-grid-columns": `${nextTetromino().shape[0].length}`,
+                    "--next-piece-grid-rows": `${nextTetromino().shape.length}`
+                  } as any}
+                >
+                  {nextTetromino().shape.map((row, y) => (
+                    row.map((cell, x) => (
+                      <div
+                        class={`${styles.cell} ${cell ? styles.filled : ''}`}
+                        style={{ "background-color": cell ? nextTetromino().color : '#222' }}
+                      />
+                    ))
+                  ))}
+                </div>
+              )}
+            </Show>
           </div>
         </div>
       </div>
 
-      {gameState().gameOver && (
+      <Show when={gameState().gameOver}>
         <div class={styles.gameOver}>
           <h2>Game Over</h2>
-          <button onClick={() => {
-            console.log('Restarting game');
-            startGame();
-          }}>Play Again</button>
+          <button
+            ref={playAgainButton}
+            onClick={() => {
+              console.log('Restarting game');
+              startGame();
+            }}
+          >
+            Play Again
+          </button>
         </div>
-      )}
+      </Show>
 
       <div class={styles.debugControls}>
         {TETROMINO_TYPES.map(type => (
