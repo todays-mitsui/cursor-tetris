@@ -23,14 +23,17 @@ const TetrisGame: Component = () => {
         moveTetromino(1, 0);
         break;
       case 'ArrowUp':
+        hardDrop(); // ハードドロップ
+        break;
+      case 'ArrowDown':
+        moveTetromino(0, 1); // ソフトドロップ
+        break;
+      case ' ':
         if (e.shiftKey) {
           rotateTetromino(false); // 左回転
         } else {
           rotateTetromino(true); // 右回転
         }
-        break;
-      case 'ArrowDown':
-        hardDrop(); // ハードドロップに変更
         break;
     }
   };
