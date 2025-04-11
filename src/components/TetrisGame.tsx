@@ -81,7 +81,10 @@ const TetrisGame: Component = () => {
       </div>
 
       <div class={styles.gameInfo}>
-        <div class={styles.score}>Score: {gameState().score}</div>
+        <div class={styles.score}>
+          <span class={styles.scoreLabel}>Score</span>
+          <span class={styles.scoreValue}>{gameState().score}</span>
+        </div>
         <div class={styles.nextPiece}>
           <h3>Next Piece</h3>
           <div class={styles.nextPiecePreview}>
