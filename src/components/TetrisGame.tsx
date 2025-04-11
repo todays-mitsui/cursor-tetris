@@ -1,9 +1,12 @@
 import { Component, onMount } from 'solid-js';
 import { useGame } from '../hooks/useGame';
+import { TetrominoType } from '../types/game';
 import styles from './TetrisGame.module.css';
 
+const TETROMINO_TYPES: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+
 const TetrisGame: Component = () => {
-  const { gameState, startGame, moveTetromino, rotateTetromino } = useGame();
+  const { gameState, startGame, moveTetromino, rotateTetromino, spawnNewTetromino } = useGame();
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (gameState().gameOver) return;
@@ -51,6 +54,16 @@ const TetrisGame: Component = () => {
           <button onClick={startGame}>Play Again</button>
         </div>
       )}
+      <div class={styles.debugControls}>
+        {TETROMINO_TYPES.map(type => (
+          <button
+            onClick={() => spawnNewTetromino(type)}
+            class={styles.debugButton}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
