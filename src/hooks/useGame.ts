@@ -1,5 +1,4 @@
-import { createSignal, onCleanup, createEffect } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createSignal, onCleanup } from 'solid-js';
 import { GameState, Tetromino, TetrominoType, Cell } from '../types/game';
 import { createTetromino } from '../utils/tetrominoes';
 import { sleep } from '../utils/sleep';
@@ -8,7 +7,6 @@ const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
 const FALL_INTERVAL = 1000; // 1秒ごとに落下
 const CLEAR_LINES_DELAY = 200;
-const HARD_DROP_INTERVAL = 10; // 高速落下時の待ち時間（ms）
 
 const createEmptyGrid = (): GameState['grid'] => {
   console.log('Creating empty grid');

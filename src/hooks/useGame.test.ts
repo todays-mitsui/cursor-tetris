@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { Cell } from '../types/game';
 import { removeLines } from './useGame';
 
-const GRID_WIDTH = 3; // テスト用に小さいグリッドを使用
-
 const createTestGrid = (rows: boolean[][]): Cell[][] => {
   return rows.map(row =>
     row.map(filled => ({ filled, color: filled ? 'red' : undefined }))
