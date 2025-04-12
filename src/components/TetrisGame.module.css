@@ -111,47 +111,29 @@
   transform: translate(-50%, -50%);
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 20px;
-  border-radius: 5px;
+  padding: 2rem;
+  border-radius: 8px;
   text-align: center;
 }
 
+.gameOver h2 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
 .gameOver button {
-  margin-top: 10px;
-  padding: 10px 20px;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
 .gameOver button:hover {
   background-color: #45a049;
-}
-
-.debugControls {
-  position: fixed;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.debugButton {
-  padding: 5px 10px;
-  background-color: #666;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: monospace;
-}
-
-.debugButton:hover {
-  background-color: #888;
 }
 
 .controls {
