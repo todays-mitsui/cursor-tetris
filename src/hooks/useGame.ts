@@ -1,7 +1,8 @@
-import { createSignal, onCleanup } from 'solid-js';
+import { createSignal, onCleanup, createEffect } from 'solid-js';
 import { GameState, Tetromino, TetrominoType, Cell } from '../types/game';
 import { createTetromino } from '../utils/tetrominoes';
 import { sleep } from '../utils/sleep';
+import { sendAnalyticsEvent } from '../utils/analytics';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
@@ -142,6 +143,12 @@ export const useGame = () => {
         grid: newGrid,
         currentTetromino: null,
       }));
+
+      // 行消去イベントを記録
+      sendAnalyticsEvent('clear_lines', {
+        lines_count: fullLines.length,
+        current_score: state.score,
+      });
 
       // 行が揃っている場合、消去前に待機
       await sleep(CLEAR_LINES_DELAY);
@@ -295,6 +302,9 @@ export const useGame = () => {
 
   const startGame = () => {
     console.log('Starting new game');
+    // ゲーム開始イベントを記録
+    sendAnalyticsEvent('game_start');
+
     setGameState(prev => ({
       ...prev,
       grid: createEmptyGrid(),
@@ -321,6 +331,11 @@ export const useGame = () => {
       dropDistance++;
     }
 
+    // ハードドロップイベントを記録
+    sendAnalyticsEvent('hard_drop', {
+      drop_distance: dropDistance,
+    });
+
     // 一度に移動
     if (dropDistance > 0) {
       setGameState(prev => ({
@@ -339,6 +354,24 @@ export const useGame = () => {
     await fixTetromino();
     spawnNewTetromino();
   };
+
+  // ゲームオーバー時の処理を追加
+  const handleGameOver = () => {
+    sendAnalyticsEvent('game_over', {
+      final_score: gameState().score,
+      play_time_seconds: Math.floor((Date.now() - gameStartTime) / 1000),
+    });
+  };
+
+  // ゲーム開始時刻を記録
+  let gameStartTime = Date.now();
+
+  // ゲームオーバー状態の監視を追加
+  createEffect(() => {
+    if (gameState().gameOver) {
+      handleGameOver();
+    }
+  });
 
   // クリーンアップ
   onCleanup(() => {
