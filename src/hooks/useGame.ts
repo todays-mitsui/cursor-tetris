@@ -6,7 +6,9 @@ import { sendGAEvent } from '../utils/analytics';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
-const FALL_INTERVAL = 1000; // 1秒ごとに落下
+const INITIAL_FALL_INTERVAL = 1000; // 初期の落下間隔（1秒）
+const MIN_FALL_INTERVAL = 400; // 最小の落下間隔（400ミリ秒）
+const SPEED_UP_THRESHOLD = 1000; // スピードアップの閾値（1000点ごと）
 const CLEAR_LINES_DELAY = 200;
 
 const createEmptyGrid = (): GameState['grid'] => {
@@ -97,6 +99,17 @@ const calculateScore = (lineCount: number): number => {
     case 4: return 800;
     default: return 0;
   }
+};
+
+// スコアに応じて落下間隔を計算する関数
+const calculateFallInterval = (score: number): number => {
+  // スコアが1000点増えるごとに50msずつ速くなる
+  const speedUpCount = Math.floor(score / SPEED_UP_THRESHOLD);
+  const newInterval = Math.max(
+    MIN_FALL_INTERVAL,
+    INITIAL_FALL_INTERVAL - (speedUpCount * 50)
+  );
+  return newInterval;
 };
 
 export const useGame = () => {
@@ -265,7 +278,7 @@ export const useGame = () => {
         const state = gameState();
         if (state.gameOver || state.isPaused || !state.currentTetromino) {
           console.log('Skipping fall:', { gameOver: state.gameOver, isPaused: state.isPaused });
-          await sleep(FALL_INTERVAL);
+          await sleep(calculateFallInterval(state.score));
           continue;
         }
 
@@ -287,7 +300,7 @@ export const useGame = () => {
           spawnNewTetromino();
         }
 
-        await sleep(FALL_INTERVAL);
+        await sleep(calculateFallInterval(state.score));
       }
     } catch (error) {
       console.error('Error in fall loop:', error);
