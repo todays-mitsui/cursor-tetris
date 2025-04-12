@@ -7,6 +7,8 @@ import { sleep } from '../utils/sleep';
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
 const FALL_INTERVAL = 1000; // 1秒ごとに落下
+const CLEAR_LINES_DELAY = 200;
+const HARD_DROP_INTERVAL = 10; // 高速落下時の待ち時間（ms）
 
 const createEmptyGrid = (): GameState['grid'] => {
   console.log('Creating empty grid');
@@ -56,14 +58,33 @@ const findFullLines = (grid: Cell[][]): number[] => {
   return fullLines;
 };
 
-const removeLines = (grid: Cell[][], linesToRemove: number[]): Cell[][] => {
+export const removeLines = (grid: Cell[][], linesToRemove: number[]): Cell[][] => {
+  if (linesToRemove.length === 0) return grid;
+
   const newGrid = [...grid];
+  const gridWidth = grid[0].length;
   
-  // 下の行から順に消していく（上の行から消すと行番号がずれる）
-  linesToRemove.sort((a, b) => b - a).forEach(lineIndex => {
+  // 有効な行インデックスのみをフィルタリング
+  const validLines = linesToRemove
+    .filter(index => index >= 0 && index < grid.length)
+    .sort((a, b) => b - a);
+
+  if (validLines.length === 0) return grid;
+
+  // 有効な行を削除
+  validLines.forEach(lineIndex => {
     newGrid.splice(lineIndex, 1);
-    newGrid.unshift(Array(GRID_WIDTH).fill(null).map(() => ({ filled: false })));
   });
+
+  // 削除した行数分の新しい行を上に追加
+  const newLines = Array(validLines.length)
+    .fill(null)
+    .map(() => Array(gridWidth)
+      .fill(null)
+      .map(() => ({ filled: false }))
+    );
+  
+  newGrid.unshift(...newLines);
 
   return newGrid;
 };
@@ -91,7 +112,7 @@ export const useGame = () => {
 
   let isFalling = false;
 
-  const fixTetromino = () => {
+  const fixTetromino = async () => {
     const state = gameState();
     if (!state.currentTetromino) return;
 
@@ -116,18 +137,34 @@ export const useGame = () => {
     // 揃った行を見つける
     const fullLines = findFullLines(newGrid);
     
-    // 揃った行を消して新しい行を追加
-    const updatedGrid = fullLines.length > 0 ? removeLines(newGrid, fullLines) : newGrid;
+    if (fullLines.length > 0) {
+      // テトリミノを固定した状態を一旦表示
+      setGameState(prev => ({
+        ...prev,
+        grid: newGrid,
+        currentTetromino: null,
+      }));
 
-    // スコアを更新
-    const additionalScore = calculateScore(fullLines.length);
+      // 行が揃っている場合、消去前に待機
+      await sleep(CLEAR_LINES_DELAY);
 
-    setGameState(prev => ({
-      ...prev,
-      grid: updatedGrid,
-      currentTetromino: null,
-      score: prev.score + additionalScore,
-    }));
+      // 揃った行を消して新しい行を追加
+      const updatedGrid = removeLines(newGrid, fullLines);
+      const additionalScore = calculateScore(fullLines.length);
+
+      setGameState(prev => ({
+        ...prev,
+        grid: updatedGrid,
+        score: prev.score + additionalScore,
+      }));
+    } else {
+      // 行が揃っていない場合は即座に状態を更新
+      setGameState(prev => ({
+        ...prev,
+        grid: newGrid,
+        currentTetromino: null,
+      }));
+    }
   };
 
   const spawnNewTetromino = (type?: TetrominoType) => {
@@ -241,7 +278,7 @@ export const useGame = () => {
         } else {
           console.log('Tetromino reached bottom or obstacle');
           // 移動できない場合は固定して新しいテトリミノを生成
-          fixTetromino();
+          await fixTetromino();
           spawnNewTetromino();
         }
 
@@ -270,51 +307,38 @@ export const useGame = () => {
     startFalling();
   };
 
-  const hardDrop = () => {
-    console.log('Hard dropping tetromino');
-    setGameState(prev => {
-      if (!prev.currentTetromino) {
-        console.log('No current tetromino to hard drop');
-        return prev;
-      }
+  const hardDrop = async () => {
+    const state = gameState();
+    if (state.gameOver || !state.currentTetromino) return;
 
-      let dropDistance = 0;
-      let testTetromino = { ...prev.currentTetromino };
+    // 落下可能な距離を計算
+    let dropDistance = 0;
+    while (isValidPosition({
+      ...state.currentTetromino,
+      position: {
+        ...state.currentTetromino.position,
+        y: state.currentTetromino.position.y + dropDistance + 1,
+      },
+    }, state.grid)) {
+      dropDistance++;
+    }
 
-      // 最下部まで移動できる距離を計算
-      while (true) {
-        const nextPosition = {
-          ...testTetromino.position,
-          y: testTetromino.position.y + 1,
-        };
+    // 一度に移動
+    if (dropDistance > 0) {
+      setGameState(prev => ({
+        ...prev,
+        currentTetromino: {
+          ...prev.currentTetromino!,
+          position: {
+            ...prev.currentTetromino!.position,
+            y: prev.currentTetromino!.position.y + dropDistance,
+          },
+        },
+      }));
+    }
 
-        const nextTetromino = {
-          ...testTetromino,
-          position: nextPosition,
-        };
-
-        if (!isValidPosition(nextTetromino, prev.grid)) {
-          break;
-        }
-
-        testTetromino = nextTetromino;
-        dropDistance++;
-      }
-
-      // 実際の移動
-      if (dropDistance > 0) {
-        console.log('Hard dropped tetromino by', dropDistance, 'cells');
-        return {
-          ...prev,
-          currentTetromino: testTetromino,
-        };
-      }
-
-      return prev;
-    });
-
-    // 即座に固定して新しいテトリミノを生成
-    fixTetromino();
+    // 固定して新しいテトリミノを生成
+    await fixTetromino();
     spawnNewTetromino();
   };
 
