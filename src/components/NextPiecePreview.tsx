@@ -1,6 +1,6 @@
 import { Component, Show } from 'solid-js';
 import { Tetromino } from '../types/game';
-import styles from './TetrisGame.module.css';
+import styles from './NextPiecePreview.module.css';
 
 interface NextPiecePreviewProps {
   nextTetromino: () => Tetromino | undefined;

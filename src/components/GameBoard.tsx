@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import { Cell } from '../types/game';
-import { type GameState } from '../hooks/useGame';
-import styles from './TetrisGame.module.css';
+import { GameState } from '../types/game';
+import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
   gameState: () => GameState;

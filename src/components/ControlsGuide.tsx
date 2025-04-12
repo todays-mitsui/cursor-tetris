@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import styles from './TetrisGame.module.css';
+import styles from './ControlsGuide.module.css';
 
 const ControlsGuide: Component = () => {
   return (
