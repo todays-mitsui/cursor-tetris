@@ -104,8 +104,8 @@ const TetrisGame: Component = () => {
                     "--next-piece-grid-rows": `${nextTetromino().shape.length}`
                   } as any}
                 >
-                  {nextTetromino().shape.map((row, y) => (
-                    row.map((cell, x) => (
+                  {nextTetromino().shape.map((row) => (
+                    row.map((cell) => (
                       <div
                         class={`${styles.cell} ${cell ? styles.filled : ''}`}
                         style={{ "background-color": cell ? nextTetromino().color : '#222' }}

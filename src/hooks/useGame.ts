@@ -1,6 +1,6 @@
 import { createSignal, onCleanup } from 'solid-js';
 import { GameState, Tetromino, TetrominoType } from '../types/game';
-import { createTetromino, TETROMINO_SHAPES } from '../utils/tetrominoes';
+import { createTetromino } from '../utils/tetrominoes';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
