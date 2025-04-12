@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="#222222"/>
+  
+  <!-- グリッドパターン（装飾） -->
+  <path d="M0 0h1200v630H0z" fill="#222222" />
+  <path d="M0 0h1200v630H0z" fill="#2A2A2A" fill-opacity="0.4" 
+        stroke="#333333" stroke-width="2" stroke-dasharray="30 30"/>
+
+  <!-- メインのTミノ -->
+  <g transform="translate(160, 115) scale(2.5)">
+    <!-- 中央のブロック -->
+    <rect x="8" y="8" width="8" height="8" fill="#9B5DE5"/>
+    <!-- 左のブロック -->
+    <rect x="0" y="8" width="8" height="8" fill="#9B5DE5"/>
+    <!-- 右のブロック -->
+    <rect x="16" y="8" width="8" height="8" fill="#9B5DE5"/>
+    <!-- 下のブロック -->
+    <rect x="8" y="16" width="8" height="8" fill="#9B5DE5"/>
+    
+    <!-- ハイライト効果 -->
+    <rect x="8" y="8" width="2" height="8" fill="#B185E8" opacity="0.5"/>
+    <rect x="0" y="8" width="2" height="8" fill="#B185E8" opacity="0.5"/>
+    <rect x="16" y="8" width="2" height="8" fill="#B185E8" opacity="0.5"/>
+    <rect x="8" y="16" width="2" height="8" fill="#B185E8" opacity="0.5"/>
+  </g>
+
+  <!-- タイトル -->
+  <text x="400" y="315" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="white">
+    Cursor Tetris
+  </text>
+
+  <!-- サブタイトル -->
+  <text x="400" y="385" font-family="Arial, sans-serif" font-size="48" fill="#9B5DE5">
+    Play Tetris in your browser
+  </text>
+</svg> 
