@@ -75,6 +75,17 @@ const TetrisGame: Component = () => {
           buttonRef={(el) => playAgainButton = el}
         />
       </Show>
+
+      <div class={styles.footer}>
+        <a
+          href="https://github.com/todays-mitsui/cursor-tetris"
+          target="_blank"
+          rel="noopener noreferrer"
+          class={styles.repoLink}
+        >
+          GitHub Repository
+        </a>
+      </div>
     </div>
   );
 };

@@ -178,4 +178,23 @@
 
 .controlsList li:last-child kbd {
   min-width: 3rem;
+}
+
+.footer {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.repoLink {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.repoLink:hover {
+  color: #333;
+  text-decoration: underline;
 } 
