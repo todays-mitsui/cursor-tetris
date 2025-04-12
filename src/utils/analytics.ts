@@ -1,10 +1,6 @@
 // GA4のイベント計測用ユーティリティ
-export const sendAnalyticsEvent = (
-  eventName: string,
-  eventParams?: Record<string, string | number | boolean>
-) => {
-  // @ts-expect-error gtag is loaded globally
-  if (typeof gtag !== 'undefined') {
+export const sendGAEvent = (eventName: string, eventParams: object = {}) => {
+  if (typeof window !== 'undefined') {
     gtag('event', eventName, eventParams);
   }
 }; 

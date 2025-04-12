@@ -2,7 +2,7 @@ import { createSignal, onCleanup, createEffect } from 'solid-js';
 import { GameState, Tetromino, TetrominoType, Cell } from '../types/game';
 import { createTetromino } from '../utils/tetrominoes';
 import { sleep } from '../utils/sleep';
-import { sendAnalyticsEvent } from '../utils/analytics';
+import { sendGAEvent } from '../utils/analytics';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
@@ -145,7 +145,7 @@ export const useGame = () => {
       }));
 
       // 行消去イベントを記録
-      sendAnalyticsEvent('clear_lines', {
+      sendGAEvent('clear_lines', {
         lines_count: fullLines.length,
         current_score: state.score,
       });
@@ -303,7 +303,7 @@ export const useGame = () => {
   const startGame = () => {
     console.log('Starting new game');
     // ゲーム開始イベントを記録
-    sendAnalyticsEvent('game_start');
+    sendGAEvent('game_start');
 
     setGameState(prev => ({
       ...prev,
@@ -332,7 +332,7 @@ export const useGame = () => {
     }
 
     // ハードドロップイベントを記録
-    sendAnalyticsEvent('hard_drop', {
+    sendGAEvent('hard_drop', {
       drop_distance: dropDistance,
     });
 
@@ -357,7 +357,7 @@ export const useGame = () => {
 
   // ゲームオーバー時の処理を追加
   const handleGameOver = () => {
-    sendAnalyticsEvent('game_over', {
+    sendGAEvent('game_over', {
       final_score: gameState().score,
       play_time_seconds: Math.floor((Date.now() - gameStartTime) / 1000),
     });
