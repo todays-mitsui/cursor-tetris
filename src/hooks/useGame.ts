@@ -1,6 +1,8 @@
-import { createSignal, onCleanup } from 'solid-js';
-import { GameState, Tetromino, TetrominoType } from '../types/game';
+import { createSignal, onCleanup, createEffect } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import { GameState, Tetromino, TetrominoType, Cell } from '../types/game';
 import { createTetromino } from '../utils/tetrominoes';
+import { sleep } from '../utils/sleep';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
@@ -54,7 +56,7 @@ export const useGame = () => {
     isPaused: false,
   });
 
-  let fallInterval: number | undefined;
+  let isFalling = false;
 
   const fixTetromino = () => {
     console.log('Fixing tetromino to grid');
@@ -197,42 +199,49 @@ export const useGame = () => {
     });
   };
 
-  const startFalling = () => {
-    if (fallInterval) return;
-    console.log('Starting fall interval');
-    fallInterval = window.setInterval(() => {
-      const state = gameState();
-      if (state.gameOver || state.isPaused || !state.currentTetromino) {
-        console.log('Skipping fall:', { gameOver: state.gameOver, isPaused: state.isPaused });
-        return;
-      }
+  const startFalling = async () => {
+    if (isFalling) return;
+    console.log('Starting fall loop');
+    isFalling = true;
 
-      // 下に移動できるかチェック
-      const movedTetromino = {
-        ...state.currentTetromino,
-        position: {
-          ...state.currentTetromino.position,
-          y: state.currentTetromino.position.y + 1,
-        },
-      };
+    try {
+      while (isFalling) {
+        const state = gameState();
+        if (state.gameOver || state.isPaused || !state.currentTetromino) {
+          console.log('Skipping fall:', { gameOver: state.gameOver, isPaused: state.isPaused });
+          await sleep(FALL_INTERVAL);
+          continue;
+        }
 
-      if (isValidPosition(movedTetromino, state.grid)) {
-        moveTetromino(0, 1);
-      } else {
-        console.log('Tetromino reached bottom or obstacle');
-        // 移動できない場合は固定して新しいテトリミノを生成
-        fixTetromino();
-        spawnNewTetromino();
+        // 下に移動できるかチェック
+        const movedTetromino = {
+          ...state.currentTetromino,
+          position: {
+            ...state.currentTetromino.position,
+            y: state.currentTetromino.position.y + 1,
+          },
+        };
+
+        if (isValidPosition(movedTetromino, state.grid)) {
+          moveTetromino(0, 1);
+        } else {
+          console.log('Tetromino reached bottom or obstacle');
+          // 移動できない場合は固定して新しいテトリミノを生成
+          fixTetromino();
+          spawnNewTetromino();
+        }
+
+        await sleep(FALL_INTERVAL);
       }
-    }, FALL_INTERVAL);
+    } catch (error) {
+      console.error('Error in fall loop:', error);
+      isFalling = false;
+    }
   };
 
   const stopFalling = () => {
-    if (fallInterval) {
-      console.log('Stopping fall interval');
-      clearInterval(fallInterval);
-      fallInterval = undefined;
-    }
+    console.log('Stopping fall loop');
+    isFalling = false;
   };
 
   const startGame = () => {
