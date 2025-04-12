@@ -46,6 +46,39 @@ const isValidPosition = (tetromino: Tetromino, grid: GameState['grid']): boolean
   return true;
 };
 
+const findFullLines = (grid: Cell[][]): number[] => {
+  const fullLines: number[] = [];
+  for (let y = 0; y < GRID_HEIGHT; y++) {
+    if (grid[y].every(cell => cell.filled)) {
+      fullLines.push(y);
+    }
+  }
+  return fullLines;
+};
+
+const removeLines = (grid: Cell[][], linesToRemove: number[]): Cell[][] => {
+  const newGrid = [...grid];
+  
+  // 下の行から順に消していく（上の行から消すと行番号がずれる）
+  linesToRemove.sort((a, b) => b - a).forEach(lineIndex => {
+    newGrid.splice(lineIndex, 1);
+    newGrid.unshift(Array(GRID_WIDTH).fill(null).map(() => ({ filled: false })));
+  });
+
+  return newGrid;
+};
+
+const calculateScore = (lineCount: number): number => {
+  // 消した行数に応じてスコアを計算
+  switch (lineCount) {
+    case 1: return 100;
+    case 2: return 300;
+    case 3: return 500;
+    case 4: return 800;
+    default: return 0;
+  }
+};
+
 export const useGame = () => {
   const [gameState, setGameState] = createSignal<GameState>({
     grid: createEmptyGrid(),
@@ -59,61 +92,42 @@ export const useGame = () => {
   let isFalling = false;
 
   const fixTetromino = () => {
-    console.log('Fixing tetromino to grid');
-    setGameState(prev => {
-      if (!prev.currentTetromino) return prev;
+    const state = gameState();
+    if (!state.currentTetromino) return;
 
-      const newGrid = [...prev.grid.map(row => [...row])];
-      const tetromino = prev.currentTetromino;
-
-      // テトリミノの各セルをグリッドに固定
-      for (let y = 0; y < tetromino.shape.length; y++) {
-        for (let x = 0; x < tetromino.shape[y].length; x++) {
-          if (tetromino.shape[y][x]) {
-            const gridY = tetromino.position.y + y;
-            const gridX = tetromino.position.x + x;
+    // 現在のテトリミノを固定
+    const newGrid = [...state.grid];
+    const tetromino = state.currentTetromino;
+    tetromino.shape.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell) {
+          const gridY = tetromino.position.y + y;
+          const gridX = tetromino.position.x + x;
+          if (gridY >= 0 && gridY < GRID_HEIGHT && gridX >= 0 && gridX < GRID_WIDTH) {
             newGrid[gridY][gridX] = {
               filled: true,
               color: tetromino.color,
             };
           }
         }
-      }
-
-      // 行の消去処理
-      let clearedLines = 0;
-      for (let y = GRID_HEIGHT - 1; y >= 0; y--) {
-        const isLineFull = newGrid[y].every(cell => cell.filled);
-        if (isLineFull) {
-          // 行を消去
-          newGrid.splice(y, 1);
-          // 上部に空の行を追加
-          newGrid.unshift(Array(GRID_WIDTH).fill(null).map(() => ({ filled: false })));
-          clearedLines++;
-          y++; // 同じ行を再度チェックするため
-        }
-      }
-
-      // スコア計算
-      let newScore = prev.score;
-      if (clearedLines > 0) {
-        console.log(`Cleared ${clearedLines} line(s)`);
-        // 同時に消した行数に応じてスコアを加算
-        // 1行: 100点
-        // 2行: 300点
-        // 3行: 500点
-        // 4行: 800点
-        const scoreTable = [0, 100, 300, 500, 800];
-        newScore += scoreTable[clearedLines];
-      }
-
-      return {
-        ...prev,
-        grid: newGrid,
-        currentTetromino: null,
-        score: newScore,
-      };
+      });
     });
+
+    // 揃った行を見つける
+    const fullLines = findFullLines(newGrid);
+    
+    // 揃った行を消して新しい行を追加
+    const updatedGrid = fullLines.length > 0 ? removeLines(newGrid, fullLines) : newGrid;
+
+    // スコアを更新
+    const additionalScore = calculateScore(fullLines.length);
+
+    setGameState(prev => ({
+      ...prev,
+      grid: updatedGrid,
+      currentTetromino: null,
+      score: prev.score + additionalScore,
+    }));
   };
 
   const spawnNewTetromino = (type?: TetrominoType) => {
