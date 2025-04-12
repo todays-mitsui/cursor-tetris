@@ -117,6 +117,18 @@ const TetrisGame: Component = () => {
             </Show>
           </div>
         </div>
+
+        <div class={styles.controls}>
+          <h3>操作説明</h3>
+          <ul class={styles.controlsList}>
+            <li><kbd>←</kbd> 左に移動</li>
+            <li><kbd>→</kbd> 右に移動</li>
+            <li><kbd>↓</kbd> 下に移動（ソフトドロップ）</li>
+            <li><kbd>↑</kbd> 即時落下（ハードドロップ）</li>
+            <li><kbd>Space</kbd> 右回転</li>
+            <li><kbd>Shift</kbd> + <kbd>Space</kbd> 左回転</li>
+          </ul>
+        </div>
       </div>
 
       <Show when={gameState().gameOver}>

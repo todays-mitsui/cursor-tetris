@@ -27,7 +27,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 180px;
+  width: 260px;
 }
 
 .score {
@@ -152,4 +152,48 @@
 
 .debugButton:hover {
   background-color: #888;
+}
+
+.controls {
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  background-color: #222;
+  border-radius: 4px;
+}
+
+.controls h3 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.controlsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.controlsList li {
+  margin: 0.3rem 0;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.controlsList kbd {
+  background-color: #333;
+  color: #fff;
+  padding: 0.15rem 0.3rem;
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  min-width: 1.2rem;
+  text-align: center;
+  display: inline-block;
+}
+
+.controlsList li:last-child kbd {
+  min-width: 3rem;
 } 
